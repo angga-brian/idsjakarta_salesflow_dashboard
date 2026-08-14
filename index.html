@@ -46,14 +46,14 @@
     .loading-overlay {
       position: absolute;
       inset: 0;
-      background: rgba(15, 23, 42, 0.95);
-      backdrop-filter: blur(8px);
+      background: rgba(15, 23, 42, 0.98);
+      backdrop-filter: blur(10px);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       z-index: 50;
-      transition: opacity 0.5s ease, visibility 0.5s ease;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
     }
 
     .loading-overlay.hidden {
@@ -112,12 +112,12 @@
     /* Teks Bergantian */
     .loading-text {
       color: #f8fafc;
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       font-weight: 700;
       letter-spacing: 0.05em;
       text-transform: uppercase;
       text-align: center;
-      min-height: 32px;
+      min-height: 36px;
       padding: 0 16px;
       transition: transform 0.2s ease, opacity 0.2s ease;
     }
@@ -150,17 +150,19 @@
       <div class="sub-caption">SalesFlow Analytics Dashboard</div>
     </div>
 
-    <!-- Ganti URL di bawah dengan URL Deploy Web App Google Apps Script kamu -->
+    <!-- Iframe sengaja tanpa 'src' awal agar TIDAK memuat sistem sebelum waktunya -->
     <iframe 
       id="dashboardIframe"
-      src="https://script.google.com/macros/s/AKfycbxYR4TF0POCHEyGDfXkp5pcUADAw4FaamWKhKMIJrKflM4QHTDzCZyq_RHE4_19MtVLAA/exec" 
       allow="fullscreen"
       title="IDS Jakarta SalesFlow Dashboard">
     </iframe>
   </div>
 
   <script>
-    // Variasi Teks Loading Bergantian
+    // masukkan URL Deploy Web App Apps Script milikmu di sini
+    const TARGET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxYR4TF0POCHEyGDfXkp5pcUADAw4FaamWKhKMIJrKflM4QHTDzCZyq_RHE4_19MtVLAA/exec";
+
+    // Urutan Teks Berurutan
     const loadingTexts = [
       "IDS JAKARTA 🚀",
       "DIVISI BLOWER HEBAT 💨",
@@ -168,34 +170,38 @@
       "NUNGGUIN YA ⏳"
     ];
 
-    let textIndex = 0;
+    let currentIndex = 0;
     const textElement = document.getElementById("dynamicText");
     const overlayElement = document.getElementById("loadingOverlay");
     const iframeElement = document.getElementById("dashboardIframe");
 
-    // Efek pergantian teks setiap 1.5 detik
-    const textInterval = setInterval(() => {
+    // Efek Transisi Teks Berurutan (1.5 Detik per Kalimat)
+    const textSequence = setInterval(() => {
       textElement.classList.add("fade-out");
+
       setTimeout(() => {
-        textIndex = (textIndex + 1) % loadingTexts.length;
-        textElement.innerText = loadingTexts[textIndex];
-        textElement.classList.remove("fade-out");
+        currentIndex++;
+
+        if (currentIndex < loadingTexts.length) {
+          // Tampilkan kalimat berikutnya
+          textElement.innerText = loadingTexts[currentIndex];
+          textElement.classList.remove("fade-out");
+        } else {
+          // SETELAH KALIMAT 'NUNGGUIN YA ⏳' SELESAI DIPROSES:
+          clearInterval(textSequence);
+          
+          // Baru sekarang URL sistem di-assign ke iframe (Memulai koneksi ke sistem)
+          iframeElement.src = TARGET_WEBAPP_URL;
+
+          // Begitu iframe/sistem selesai dimuat penuh, sembunyikan overlay
+          iframeElement.onload = function() {
+            setTimeout(() => {
+              overlayElement.classList.add("hidden");
+            }, 300);
+          };
+        }
       }, 200);
     }, 1500);
-
-    // Sembunyikan loading jika iframe sudah selesai dimuat
-    iframeElement.onload = function() {
-      setTimeout(() => {
-        clearInterval(textInterval);
-        overlayElement.classList.add("hidden");
-      }, 600);
-    };
-
-    // Safety timeout (maksimal 8 detik tetap menutup overlay jika jaringan lambat)
-    setTimeout(() => {
-      clearInterval(textInterval);
-      overlayElement.classList.add("hidden");
-    }, 8000);
   </script>
 
 </body>
