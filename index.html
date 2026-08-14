@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IDS Jakarta - SalesFlow Analytics</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #0f172a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 12px;
+    }
+
+    .embed-container {
+      position: relative;
+      width: 100%;
+      max-width: 1400px;
+      height: 90vh;
+      min-height: 650px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+      border: 1px solid #1e293b;
+      background: #0f172a;
+    }
+
+    /* Frame Styling */
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    /* Loading Overlay Styling */
+    .loading-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 50;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    .loading-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    /* Spinner Bulat Berputar */
+    .spinner-wrapper {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      margin-bottom: 24px;
+    }
+
+    .spinner-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 4px solid transparent;
+      border-top-color: #0284c7;
+      border-right-color: #38bdf8;
+      border-radius: 50%;
+      animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    }
+
+    .spinner-ring:nth-child(2) {
+      width: 70%;
+      height: 70%;
+      top: 15%;
+      left: 15%;
+      border-top-color: #10b981;
+      border-right-color: #34d399;
+      animation: spin-reverse 0.9s linear infinite;
+    }
+
+    .spinner-ring:nth-child(3) {
+      width: 40%;
+      height: 40%;
+      top: 30%;
+      left: 30%;
+      border-top-color: #f59e0b;
+      animation: spin 1.5s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes spin-reverse {
+      0% { transform: rotate(360deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    /* Teks Bergantian */
+    .loading-text {
+      color: #f8fafc;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      text-align: center;
+      min-height: 32px;
+      padding: 0 16px;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .loading-text.fade-out {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+
+    .sub-caption {
+      margin-top: 8px;
+      color: #64748b;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="embed-container">
+    <!-- Loading Screen Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+      <div class="spinner-wrapper">
+        <div class="spinner-ring"></div>
+        <div class="spinner-ring"></div>
+        <div class="spinner-ring"></div>
+      </div>
+      <div id="dynamicText" class="loading-text">IDS JAKARTA 🚀</div>
+      <div class="sub-caption">SalesFlow Analytics Dashboard</div>
+    </div>
+
+    <!-- Ganti URL di bawah dengan URL Deploy Web App Google Apps Script kamu -->
+    <iframe 
+      id="dashboardIframe"
+      src="https://script.google.com/macros/s/AKfycbxYR4TF0POCHEyGDfXkp5pcUADAw4FaamWKhKMIJrKflM4QHTDzCZyq_RHE4_19MtVLAA/exec" 
+      allow="fullscreen"
+      title="IDS Jakarta SalesFlow Dashboard">
+    </iframe>
+  </div>
+
+  <script>
+    // Variasi Teks Loading Bergantian
+    const loadingTexts = [
+      "IDS JAKARTA 🚀",
+      "DIVISI BLOWER HEBAT 💨",
+      "ZERO WARANTY ZERO WORRY 😎",
+      "NUNGGUIN YA ⏳"
+    ];
+
+    let textIndex = 0;
+    const textElement = document.getElementById("dynamicText");
+    const overlayElement = document.getElementById("loadingOverlay");
+    const iframeElement = document.getElementById("dashboardIframe");
+
+    // Efek pergantian teks setiap 1.5 detik
+    const textInterval = setInterval(() => {
+      textElement.classList.add("fade-out");
+      setTimeout(() => {
+        textIndex = (textIndex + 1) % loadingTexts.length;
+        textElement.innerText = loadingTexts[textIndex];
+        textElement.classList.remove("fade-out");
+      }, 200);
+    }, 1500);
+
+    // Sembunyikan loading jika iframe sudah selesai dimuat
+    iframeElement.onload = function() {
+      setTimeout(() => {
+        clearInterval(textInterval);
+        overlayElement.classList.add("hidden");
+      }, 600);
+    };
+
+    // Safety timeout (maksimal 8 detik tetap menutup overlay jika jaringan lambat)
+    setTimeout(() => {
+      clearInterval(textInterval);
+      overlayElement.classList.add("hidden");
+    }, 8000);
+  </script>
+
+</body>
+</html>
