@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>IDS Jakarta - SalesFlow Analytics</title>
   <style>
     * {
@@ -11,30 +11,24 @@
       padding: 0;
     }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden; /* Mencegah double scrollbar */
       background-color: #0f172a;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 12px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
+    /* Container Full Screen */
     .embed-container {
       position: relative;
       width: 100%;
-      max-width: 1400px;
-      height: 90vh;
-      min-height: 650px;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
-      border: 1px solid #1e293b;
+      height: 100%;
+      min-height: 100vh;
       background: #0f172a;
     }
 
-    /* Frame Styling */
+    /* Iframe Full Screen */
     iframe {
       width: 100%;
       height: 100%;
@@ -139,7 +133,6 @@
 <body>
 
   <div class="embed-container">
-    <!-- Loading Screen Overlay -->
     <div id="loadingOverlay" class="loading-overlay">
       <div class="spinner-wrapper">
         <div class="spinner-ring"></div>
@@ -150,7 +143,6 @@
       <div class="sub-caption">SalesFlow Analytics Dashboard</div>
     </div>
 
-    <!-- Iframe sengaja tanpa 'src' awal agar TIDAK memuat sistem sebelum waktunya -->
     <iframe 
       id="dashboardIframe"
       allow="fullscreen"
@@ -159,10 +151,8 @@
   </div>
 
   <script>
-    // masukkan URL Deploy Web App Apps Script milikmu di sini
     const TARGET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwnkapk3o69krnqcYE8Z8QcSRNAaiRy-aVrRD6-DsGirqqWKiL_w9Fs_Y_sH_uGaFxSig/exec";
 
-    // Urutan Teks Berurutan
     const loadingTexts = [
       "IDS JAKARTA 🚀",
       "DIVISI BLOWER HEBAT 💨",
@@ -175,7 +165,6 @@
     const overlayElement = document.getElementById("loadingOverlay");
     const iframeElement = document.getElementById("dashboardIframe");
 
-    // Efek Transisi Teks Berurutan (1.5 Detik per Kalimat)
     const textSequence = setInterval(() => {
       textElement.classList.add("fade-out");
 
@@ -183,22 +172,19 @@
         currentIndex++;
 
         if (currentIndex < loadingTexts.length) {
-          // Tampilkan kalimat berikutnya
           textElement.innerText = loadingTexts[currentIndex];
           textElement.classList.remove("fade-out");
         } else {
-          // SETELAH KALIMAT 'NUNGGUIN YA ⏳' SELESAI DIPROSES:
           clearInterval(textSequence);
           
-          // Baru sekarang URL sistem di-assign ke iframe (Memulai koneksi ke sistem)
-          iframeElement.src = TARGET_WEBAPP_URL;
-
-          // Begitu iframe/sistem selesai dimuat penuh, sembunyikan overlay
+          // Event listener di-assign sebelum URL dimuat
           iframeElement.onload = function() {
             setTimeout(() => {
               overlayElement.classList.add("hidden");
             }, 300);
           };
+
+          iframeElement.src = TARGET_WEBAPP_URL;
         }
       }, 200);
     }, 1500);
